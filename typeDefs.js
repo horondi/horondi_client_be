@@ -23,6 +23,8 @@ const {
   purchasedProductsType,
   cartType,
   cartInput,
+  wishlistType,
+  wishlistInput,
 } = require('./modules/user/user.graphql');
 const {
   productType,
@@ -176,6 +178,7 @@ const typeDefs = gql`
   ${closureFeatureSet}
   ${purchasedProductsType}
   ${cartType}
+  ${wishlistType}
   ${colorType}
   ${constructorBasicType}
   ${constructorBasicFeatureSet}
@@ -475,6 +478,7 @@ const typeDefs = gql`
     getUserOrders(pagination: Pagination): [Order!]
     getCountUserOrders(id: ID): countOrderResult
     getCartByUserId(id: ID!): UserResult
+    getWishlistByUserId(id: ID!): UserResult
     getOrdersStatistic(date: Int!): StatisticDoughnut!
     getPaidOrdersStatistic(date: Int!): StatisticBar!
     getAllNews(limit: Int, skip: Int, filter:NewsFilterInput): PaginatedNews!
@@ -622,6 +626,7 @@ const typeDefs = gql`
   ${userUpdateInput}
   ${productInput}
   ${cartInput}
+  ${wishlistInput}
   ${commentInput}
   ${commentsSortInput}
   ${replyCommentsSortInput}
@@ -788,6 +793,22 @@ const typeDefs = gql`
       ): UserResult
     mergeCartFromLS(
       items:[ CartFromLSInput!],
+      id: ID!
+      ): UserResult
+    addProductItemToWishlist(productId: ID!, sizeId: ID!, id: ID!): UserResult
+    cleanWishlist(id: ID!): UserResult
+    addConstructorProductItemToWishlist(
+      productId: ID!,
+      sizeId:ID!,
+       constructorData: WishlistInput!, 
+       id: ID!
+       ): UserResult
+    removeProductItemsFromWishlist(
+      items: RemoveItemsFromWishlistInput!,
+      id: ID!
+      ): UserResult
+    mergeWishlistFromLS(
+      items:[ WishlistFromLSInput!],
       id: ID!
       ): UserResult
     registerAdmin(user: AdminRegisterInput!): LogicalResult!

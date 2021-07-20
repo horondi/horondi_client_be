@@ -106,6 +106,11 @@ const { backQuery, backMutation } = require('./modules/back/back.resolver');
 
 const { cartMutation, cartQuery } = require('./modules/cart/cart.resolver');
 
+const {
+  wishlistMutation,
+  wishlistQuery,
+} = require('./modules/wishlist/wishlist.resolver');
+
 const categoryService = require('./modules/category/category.service');
 const userService = require('./modules/user/user.service');
 const productsService = require('./modules/product/product.service');
@@ -178,6 +183,8 @@ const resolvers = {
     ...historyQuery,
 
     ...cartQuery,
+
+    ...wishlistQuery,
 
     ...currencyQuery,
 
@@ -362,6 +369,46 @@ const resolvers = {
           },
           price: item.price,
           quantity: item.quantity,
+          options: {
+            size: sizeService.getSizeById(item.options.size),
+          },
+        };
+      }),
+  },
+  Wishlist: {
+    items: parent =>
+      parent.items.map(item => {
+        if (item.product) {
+          return {
+            product: productsService.getProductById(item.product),
+            price: item.price,
+            options: {
+              size: sizeService.getSizeById(item.options.size),
+            },
+          };
+        }
+        return {
+          productFromConstructor: {
+            product: productsService.getProductById(
+              item.fromConstructor.product
+            ),
+            constructorBasics: constructorServices.getConstructorElementById(
+              item.fromConstructor.constructorBasics,
+              constructorBasicModel
+            ),
+            constructorBottom: constructorServices.getConstructorElementById(
+              item.fromConstructor.constructorBottom,
+              constructorBottomModel
+            ),
+            constructorFrontPocket: constructorServices.getConstructorElementById(
+              item.fromConstructor.constructorFrontPocket,
+              constructorFrontPocketModel
+            ),
+            constructorPattern: patternService.getPatternById(
+              item.fromConstructor.constructorPattern
+            ),
+          },
+          price: item.price,
           options: {
             size: sizeService.getSizeById(item.options.size),
           },
@@ -559,6 +606,8 @@ const resolvers = {
 
   Mutation: {
     ...cartMutation,
+
+    ...wishlistMutation,
 
     ...uploadMutation,
 
