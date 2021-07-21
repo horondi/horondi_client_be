@@ -2,6 +2,7 @@ const Strap = require('./strap.model');
 const RuleError = require('../../errors/rule.error');
 const uploadService = require('../upload/upload.service');
 const { calculatePrice } = require('../currency/currency.utils');
+const { uploadSmallImage } = require('../upload/upload.utils');
 const {
   commonFiltersHandler,
 } = require('../../utils/constructorOptionCommonFilters');
@@ -62,13 +63,7 @@ class StrapService {
   }
 
   async getStrapsByModel(id) {
-    const strap = Strap.find({ model: id }).exec();
-
-    if (!strap) {
-      throw new RuleError(STRAP_NOT_FOUND, NOT_FOUND);
-    }
-
-    return strap;
+    return Strap.find({ model: id }).exec();
   }
 
   async deleteStrap(id, { _id: adminId }) {
@@ -123,8 +118,7 @@ class StrapService {
 
     await uploadService.deleteFiles(image);
 
-    const uploadImage = await uploadService.uploadSmallImage(image);
-    strap.image = uploadImage.fileNames.small;
+    strap.image = await uploadSmallImage(image);
 
     const { beforeChanges, afterChanges } = getChanges(strapToUpdate, strap);
 
@@ -145,8 +139,7 @@ class StrapService {
 
   async addStrap(strap, image, { _id: adminId }) {
     if (image) {
-      const uploadImage = await uploadService.uploadSmallImage(image);
-      strap.image = uploadImage.fileNames.small;
+      strap.image = await uploadSmallImage(image);
     }
 
     if (strap.additionalPrice) {
